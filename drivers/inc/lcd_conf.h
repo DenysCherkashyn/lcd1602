@@ -55,11 +55,11 @@ extern "C" {
 #endif    
  
     //-- DISPLAY CONFIG MACROS --//
-    #define DISPLAY_CONFIG		        0x28u                   /* Use 4-bit interface, 2 or 4 Lines, 5x8 pixel resolution */
-//  #define DISPLAY_CONFIG      		0x20u                   /* Use 4-bit interface, 1 Line, 5x8 pixel resolution */
 
+    #define LINE_QUANTITY			2		    /*quantity of lines in LCD screen: 1, 2 or 4*/
+    #define LINE_LENGTH				16		    /*length of one LCD line */
     #define SET_COURSOR                         1                   /* Show coursor by default: 1 - ON, 0 - OFF  */
-    #define SET_BLINKING                        0                   /* Enable blinking for coursor by default: 1 - ON, 0 - OFF  */
+    #define SET_BLINKING                        1                   /* Enable blinking for coursor by default: 1 - ON, 0 - OFF  */
     #define SET_SHIFT_DISPLAY                   0                   /* Shift display with new symbol: 1 - ON, 0 - OFF  */
     #define SET_SHIFT_INCREMENT                 1                   /* Shift coursor for next new symbol adress: 1 - by incrementing, 0 - by decrementing */
     

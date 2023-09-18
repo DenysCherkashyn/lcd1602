@@ -6,20 +6,33 @@
 extern "C" {
 #endif
 
-#define BF_PORT			D7_PORT
-#define BF_PIN			D7_PIN
-
 //-------------------------------
 // SET MCU TIMINGS
 //-------------------------------
 #define BUSY_CYCLE_TIME				50u					/* x 1us. See datasheet for minimal value. NOT LESS THEN 50us !!!*/
-#define CLRSCR_CYCLE_TIME			2000u					/* x 1us. See datasheet for minimal value. */
+#define CLRSCR_CYCLE_TIME			1500u					/* x 1us. See datasheet for minimal value. */
 #define RETHOME_CYCLE_TIME			2000u					/* x 1us. See datasheet for minimal value. */
 #define INIT_CYCLE_TIME				5000u
 
 //-------------------------------
 // DISPLAY SETS
 //-------------------------------
+#if(LINE_QUANTITY == 1)
+    #define DISPLAY_CONFIG      		0x20u                   /* Use 4-bit interface, 1 Line, 5x8 pixel resolution */
+
+#elif(LINE_QUANTITY == 2 || LINE_QUANTITY == 4)
+    #define DISPLAY_CONFIG		        0x28u                   /* Use 4-bit interface, 2 or 4 Lines, 5x8 pixel resolution */
+#else
+    #define LINE_QUANTITY	    		2
+    #define DISPLAY_CONFIG		        0x28u                   /* Use 4-bit interface, 2 or 4 Lines, 5x8 pixel resolution */
+#endif
+
+
+#define	START_POSITION_LINE_1			0x00u
+#define START_POSITION_LINE_2			0x40u
+#define START_POSITION_LINE_3			(START_POSITION_LINE_1 + LINE_LENGTH)
+#define START_POSITION_LINE_4			(START_POSITION_LINE_2 + LINE_LENGTH)
+
 #define CLEAR_DISPLAY               0x01
 #define RETURN_HOME                 0x02
 #define COURSOR_SHIFT_INCREMENT     0x02                    /* I/D bit, inverse bit - enable decrement coursor shifting */
@@ -48,7 +61,7 @@ extern "C" {
 #else
     #define E_PORT			nullptr
     #define RS_PORT			nullptr
-    //#define RW_PORT			nullptr
+
     #define D4_PORT			nullptr
     #define D5_PORT			nullptr
     #define D6_PORT			nullptr

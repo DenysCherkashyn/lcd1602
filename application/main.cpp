@@ -36,7 +36,7 @@ int main(void)
   //  LCD& lcd = LCD::getInstance();
 
    lcd.off();
-
+   lcd.on();
    lcd.putc(0b10101000);	// 'П'
 
     lcd.putc(0b01101111);	// 'о'
@@ -44,6 +44,8 @@ int main(void)
     lcd.putc(0b10111000);	// 'и'
    lcd.putc(0b10111101);	// 'н'
     lcd.putc(0b01100001);	// 'а'
+    lcd.home();
+    lcd.goTo(2, 7);
     lcd.on();/**/
     return 0;
 	/**/

@@ -38,7 +38,7 @@ class LCD final {
         
             
         /*
-        void home ();               //lcdReturn?
+                       //lcdReturn?
         void setMode ();
         void goTo ();
         void puts ();
@@ -62,6 +62,8 @@ class LCD final {
 	void on ();
 	void off ();
 	void clear ();
+	void home ();
+	void goTo (uint8_t, uint8_t);
 
 	void putc (uint8_t data);
         

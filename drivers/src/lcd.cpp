@@ -206,8 +206,34 @@ void LCD::init ( ) {
 	    #ifdef I2C_LCD_ADDRESS
     		i2cDisconnect();
 	    #endif
-    	    delay_us(1500);
+    	    delay_us(CLRSCR_CYCLE_TIME);
     	}
+
+    	void LCD::home( ) {
+    	    	    resetBit(RS_PORT, RS_PIN);
+    	    	    write(RETURN_HOME);
+    		    #ifdef I2C_LCD_ADDRESS
+    	    		i2cDisconnect();
+    		    #endif
+    	    	    delay_us(RETHOME_CYCLE_TIME);
+    	    	}
+
+	void LCD::goTo(uint8_t line, uint8_t position){
+	 /*   switch (line){
+	    case 1u: line = START_POSITION_LINE_1; break;
+	    case 2u: line = START_POSITION_LINE_2; break;
+	    case 3u: line = START_POSITION_LINE_3; break;
+	    case 4u: line = START_POSITION_LINE_4; break;
+	    default: return;
+	    };
+	    position = (position > (LINE_LENGTH-1)) ? (LINE_LENGTH-1) :
+		    (position < 0) ? 0 : position;
+	    resetBit(RS_PORT, RS_PIN);
+	    write (0x80u | (line + position));
+	    #ifdef I2C_LCD_ADDRESS
+		i2cDisconnect();
+	    #endif/**/
+	}
 
     void LCD::putc (uint8_t data) {
 	setBit(RS_PORT, RS_PIN);
