@@ -19,7 +19,6 @@
  * 	PRIVATE METHODS AND PROPERTIES
  *
  *****************************************/
-
 #ifdef I2C_LCD_ADDRESS
    void LCD::i2cDisconnect() {
 	i2cMasterWrite(I2C_LCD_ADDRESS, nullptr);
@@ -106,6 +105,22 @@ void LCD::write (uint8_t data) {
     delay_us(BUSY_CYCLE_TIME);
 }
 
+void LCD::writeInstruction(uint8_t data) {
+    resetBit(RS_PORT, RS_PIN);
+    write(data);
+    #ifdef I2C_LCD_ADDRESS
+	i2cDisconnect();
+    #endif
+}
+
+void LCD::writeCharacter(uint8_t data) {
+   setBit(RS_PORT, RS_PIN);
+   write(data);
+   #ifdef I2C_LCD_ADDRESS
+       i2cDisconnect();
+   #endif
+}
+
 void LCD::config (uint8_t data) {
     setHigh(data);
     strobe();
@@ -151,6 +166,12 @@ void LCD::init ( ) {
 	#endif
         }
 
+uint8_t LCD::checkSym(uint16_t& in) {
+    return (in<0x07B) ?
+	    (uint8_t)in :
+	    charTable.at(in);
+}
+
 
 /*****************************************
  *
@@ -183,43 +204,27 @@ void LCD::init ( ) {
     	}
 
     	void LCD::on( ) {
-    	    resetBit(RS_PORT, RS_PIN);
     	    backlightOn();
-    	    write(DISPLAY_CONTROL_DEFAULT|DISPLAY_ON);
-	    #ifdef I2C_LCD_ADDRESS
-		i2cDisconnect();
-	    #endif
+    	    writeInstruction(DISPLAY_CONTROL_DEFAULT|DISPLAY_ON);
 	}
 
     	void LCD::off( ) {
-    	    resetBit(RS_PORT, RS_PIN);
     	    backlightOff();
-    	    write(DISPLAY_CONTROL_DEFAULT);
-	    #ifdef I2C_LCD_ADDRESS
-		    i2cDisconnect();
-	    #endif
-}
+    	    writeInstruction(DISPLAY_CONTROL_DEFAULT);
+    	}
 
     	void LCD::clear( ) {
-    	    resetBit(RS_PORT, RS_PIN);
-    	    write(CLEAR_DISPLAY);
-	    #ifdef I2C_LCD_ADDRESS
-    		i2cDisconnect();
-	    #endif
+    	    writeInstruction(CLEAR_DISPLAY);
     	    delay_us(CLRSCR_CYCLE_TIME);
     	}
 
     	void LCD::home( ) {
-    	    	    resetBit(RS_PORT, RS_PIN);
-    	    	    write(RETURN_HOME);
-    		    #ifdef I2C_LCD_ADDRESS
-    	    		i2cDisconnect();
-    		    #endif
+    	    	    writeInstruction(RETURN_HOME);
     	    	    delay_us(RETHOME_CYCLE_TIME);
     	    	}
 
 	void LCD::goTo(uint8_t line, uint8_t position){
-	 /*   switch (line){
+	    switch (line){
 	    case 1u: line = START_POSITION_LINE_1; break;
 	    case 2u: line = START_POSITION_LINE_2; break;
 	    case 3u: line = START_POSITION_LINE_3; break;
@@ -228,16 +233,42 @@ void LCD::init ( ) {
 	    };
 	    position = (position > (LINE_LENGTH-1)) ? (LINE_LENGTH-1) :
 		    (position < 0) ? 0 : position;
-	    resetBit(RS_PORT, RS_PIN);
-	    write (0x80u | (line + position));
-	    #ifdef I2C_LCD_ADDRESS
-		i2cDisconnect();
-	    #endif/**/
+	    writeInstruction(0x80u | (line + position));
 	}
 
-    void LCD::putc (uint8_t data) {
+
+    void LCD::print (uint16_t data) {
 	setBit(RS_PORT, RS_PIN);
-	write(data);
+	write(checkSym(data));
+	#ifdef I2C_LCD_ADDRESS
+	    i2cDisconnect();
+	#endif
+    }
+
+
+    void LCD::print(std::string data){
+	uint16_t tmp = 0;
+	bool readyFlag = false;
+
+	setBit(RS_PORT, RS_PIN);
+	for(const char ch: data) {
+	    tmp |= ch;
+
+	    #ifdef UTF8
+	    if(!readyFlag) {
+		readyFlag = true;
+		if (ch >= 0xC2) {
+		  tmp <<= 8u;
+		  continue;
+		};
+	    };
+	    #endif
+
+	    write(checkSym(tmp));
+	    readyFlag = false;
+	    tmp = 0;
+	};
+
 	#ifdef I2C_LCD_ADDRESS
 	    i2cDisconnect();
 	#endif

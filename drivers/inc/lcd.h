@@ -2,12 +2,16 @@
 #define LCD_H
 
 
+#include <unordered_map>
+#include <string>
 
 #include "lcd_conf.h"
 #include "lcd_def.h"
+#include "lcd_charTable.h"
 
 class LCD final {
      private:
+	const std::unordered_map<uint16_t, uint8_t> charTable = CHAR_TABLE;
         bool initialized = false;
         uint8_t lastTransferDataByte = 0x00;
 	#ifdef I2C_LCD_ADDRESS
@@ -33,16 +37,19 @@ class LCD final {
         void setCommandMode ();
         void setWriteDataMode ();
         void write(uint8_t);
+        void writeInstruction(uint8_t);
+        void writeCharacter(uint8_t);
         void config(uint8_t);
         void init();
+        uint8_t checkSym(uint16_t&);
         
             
         /*
                        //lcdReturn?
         void setMode ();
-        void goTo ();
+
         void puts ();
-        void putc ();
+
         void loadChar ();
         void drawChar ();
         void backSpace ();
@@ -65,7 +72,8 @@ class LCD final {
 	void home ();
 	void goTo (uint8_t, uint8_t);
 
-	void putc (uint8_t data);
+	void print (uint16_t data);
+	void print (std::string);
         
 };
     

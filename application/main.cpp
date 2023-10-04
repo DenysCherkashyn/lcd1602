@@ -37,15 +37,20 @@ int main(void)
 
    lcd.off();
    lcd.on();
-   lcd.putc(0b10101000);	// 'П'
+ /*  lcd.printChar('П');	// 'П'
 
-    lcd.putc(0b01101111);	// 'о'
-    lcd.putc(0b10111011);	// 'л'
-    lcd.putc(0b10111000);	// 'и'
-   lcd.putc(0b10111101);	// 'н'
-    lcd.putc(0b01100001);	// 'а'
-    lcd.home();
-    lcd.goTo(2, 7);
+    lcd.printChar('о');	// 'о'
+    lcd.printChar('Л');	// 'л'
+    lcd.goTo(2, 3);
+    lcd.printChar('и');	// 'и'
+    lcd.printChar('н');	// 'н'
+    lcd.printChar('а');	// 'а'*/
+  // lcd.printChar('Ж');
+   lcd.print("Cлавa");
+   lcd.goTo(2,4);
+   lcd.print("Україні-2023");
+   lcd.home();
+
     lcd.on();/**/
     return 0;
 	/**/

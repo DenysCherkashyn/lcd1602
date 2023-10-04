@@ -54,6 +54,11 @@ extern "C" {
     #define BACKLIGHT_PIN 	 					3			            /* Pin number (according to the actual connection) */
 #endif    
  
+    //-- CHARACTERS CODING CONFIG --//
+
+    #define UTF8
+    //#define CP1251
+
     //-- DISPLAY CONFIG MACROS --//
 
     #define LINE_QUANTITY			2		    /*quantity of lines in LCD screen: 1, 2 or 4*/
