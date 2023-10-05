@@ -172,6 +172,12 @@ uint8_t LCD::checkSym(uint16_t& in) {
 	    charTable.at(in);
 }
 
+std::string LCD::numToStr(uint8_t& num) {
+    return (num==9) ? "9" : (num==8) ? "8" : (num==7) ? "7" : (num==6) ? "6" :\
+	   (num==5) ? "5" : (num==4) ? "4" : (num==3) ? "3" : (num==2) ? "2" :\
+	   (num==1) ? "1" : (num==0) ? "0" : " ";
+}
+
 
 /*****************************************
  *
@@ -255,13 +261,13 @@ uint8_t LCD::checkSym(uint16_t& in) {
 	    tmp |= ch;
 
 	    #ifdef UTF8
-	    if(!readyFlag) {
-		readyFlag = true;
-		if (ch >= 0xC2) {
-		  tmp <<= 8u;
-		  continue;
+		if(!readyFlag) {
+		    readyFlag = true;
+		    if (ch >= 0xC2) {
+		      tmp <<= 8u;
+		      continue;
+		    };
 		};
-	    };
 	    #endif
 
 	    write(checkSym(tmp));
@@ -272,4 +278,27 @@ uint8_t LCD::checkSym(uint16_t& in) {
 	#ifdef I2C_LCD_ADDRESS
 	    i2cDisconnect();
 	#endif
+    }
+
+    void LCD::printDec(int value, uint8_t digits) {
+	std::string str;
+	uint8_t restOfDiv;
+	int tmp = (value<0) ? value*(-1) : value;
+
+	while(tmp>0){
+	    restOfDiv = tmp%10;
+	    str.insert(0, numToStr(restOfDiv));
+	    tmp/=10;
+	};
+	if(value < 0)	str.insert(0,"-");
+	if(digits>0)	str+=".";
+	while(digits>0) {
+	    str+="0";
+	    --digits;
+	};
+	print(str);
+    }
+
+    void LCD::printDec(int value) {
+	printDec(value, 0);
     }

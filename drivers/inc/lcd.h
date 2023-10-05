@@ -42,18 +42,29 @@ class LCD final {
         void config(uint8_t);
         void init();
         uint8_t checkSym(uint16_t&);
+        std::string numToStr(uint8_t&);
         
             
         /*
                        //lcdReturn?
         void setMode ();
 
-        void puts ();
 
         void loadChar ();
         void drawChar ();
-        void backSpace ();
+        uint8_t[] getPosition();
+        void cursorShiftLeft(uint8_t);
+        void cursorShiftRight(uint8_t);
+        void backspace ();
 
+
+        void printInteger (uint32_t);
+        void printOct (uint32_t, uint_8);
+        void printHex (uint32_t, uint_8)';
+        void printBin (uint32_t, uint_8);
+
+        drawBar(uint8_t);
+        clearBar(uint8_t);?
         */
         
             
@@ -74,6 +85,8 @@ class LCD final {
 
 	void print (uint16_t data);
 	void print (std::string);
+	void printDec (int, uint8_t);
+	void printDec (int);
         
 };
     

@@ -37,27 +37,17 @@ int main(void)
 
    lcd.off();
    lcd.on();
- /*  lcd.printChar('П');	// 'П'
 
-    lcd.printChar('о');	// 'о'
-    lcd.printChar('Л');	// 'л'
-    lcd.goTo(2, 3);
-    lcd.printChar('и');	// 'и'
-    lcd.printChar('н');	// 'н'
-    lcd.printChar('а');	// 'а'*/
-  // lcd.printChar('Ж');
-   lcd.print("Cлавa");
+ // lcd.print("2.25");
+  lcd.printDec(-123456789, 2);
    lcd.goTo(2,4);
    lcd.print("Україні-2023");
    lcd.home();
 
-    lcd.on();/**/
-    return 0;
-	/**/
-    /* Loop forever */
-	while(1){
+   return 0;
+   /**/
+   /* Loop forever */
+   while(1){
 
-	}
-
-
+   }
 }
