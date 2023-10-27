@@ -59,6 +59,9 @@ extern "C" {
     #define UTF8
     //#define CP1251
 
+    #define FLOAT_DIGITS_MAX 			8
+    #define DOUBLE_DIGITS_MAX			16
+
     //-- DISPLAY CONFIG MACROS --//
 
     #define LINE_QUANTITY			2		    /*quantity of lines in LCD screen: 1, 2 or 4*/

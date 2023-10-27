@@ -37,9 +37,11 @@ int main(void)
 
    lcd.off();
    lcd.on();
+//   lcd.backlightOff();
 
- // lcd.print("2.25");
-  lcd.printDec(-123456789, 2);
+  //lcd.print("2.25");
+   lcd.printDec(-499999.90, 1);
+   lcd.home();
    lcd.goTo(2,4);
    lcd.print("Україні-2023");
    lcd.home();

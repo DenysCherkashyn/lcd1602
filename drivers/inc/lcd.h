@@ -42,7 +42,7 @@ class LCD final {
         void config(uint8_t);
         void init();
         uint8_t checkSym(uint16_t&);
-        std::string numToStr(uint8_t&);
+        std::string intToStr(int);
         
             
         /*
@@ -87,7 +87,11 @@ class LCD final {
 	void print (std::string);
 	void printDec (int, uint8_t);
 	void printDec (int);
-        
+	void printDec (double, uint8_t);
+	void printDec (double);
+	void printDec (float, uint8_t);
+	void printDec (float);
+
 };
     
 #endif      /*LCD_H*/

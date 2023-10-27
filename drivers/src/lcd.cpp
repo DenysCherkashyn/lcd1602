@@ -159,6 +159,8 @@ void LCD::init ( ) {
             backlightOn();
             write(DISPLAY_CONTROL_DEFAULT|DISPLAY_ON); //display on
         };
+        strobe();
+        home();
         initialized = true;
 
         #ifdef I2C_LCD_ADDRESS
@@ -172,12 +174,9 @@ uint8_t LCD::checkSym(uint16_t& in) {
 	    charTable.at(in);
 }
 
-std::string LCD::numToStr(uint8_t& num) {
-    return (num==9) ? "9" : (num==8) ? "8" : (num==7) ? "7" : (num==6) ? "6" :\
-	   (num==5) ? "5" : (num==4) ? "4" : (num==3) ? "3" : (num==2) ? "2" :\
-	   (num==1) ? "1" : (num==0) ? "0" : " ";
-}
-
+std::string LCD::intToStr(int value) {
+    return std::to_string(value);
+}/**/
 
 /*****************************************
  *
@@ -282,16 +281,9 @@ std::string LCD::numToStr(uint8_t& num) {
 
     void LCD::printDec(int value, uint8_t digits) {
 	std::string str;
-	uint8_t restOfDiv;
-	int tmp = (value<0) ? value*(-1) : value;
 
-	while(tmp>0){
-	    restOfDiv = tmp%10;
-	    str.insert(0, numToStr(restOfDiv));
-	    tmp/=10;
-	};
-	if(value < 0)	str.insert(0,"-");
-	if(digits>0)	str+=".";
+	str = intToStr(value);
+	if(digits>0) str+=".";
 	while(digits>0) {
 	    str+="0";
 	    --digits;
@@ -300,5 +292,64 @@ std::string LCD::numToStr(uint8_t& num) {
     }
 
     void LCD::printDec(int value) {
-	printDec(value, 0);
+    	printDec(value, 0);
+        }
+
+    void LCD::printDec(double value, uint8_t digits) {
+	int intValue = 0;
+	int fractValue = 0;
+
+	std::string sign="";
+	std::string str;
+
+	if(value == 0){
+	    printDec(0, digits);
+	}
+	else {
+	    if (value<0) {
+		sign="-";
+		value *=(-1);
+	    };
+
+	    intValue = (int) value;
+
+	    value = value - (double)intValue;
+	    for (uint8_t i=0; i < digits; ++i){
+		value*=10;
+	    };
+	    fractValue = (int) value;
+
+	   if((value - (double)fractValue) >= 0.4999){
+	       ++fractValue;
+	   };
+	   str = intToStr(fractValue);
+	   if( fractValue>=1 && str.length() > digits) {
+	       ++intValue;
+	       str.erase(0, 1);
+	   };
+	   if(digits>0) {
+	       while(str.length()<digits) {
+		   str="0"+str;
+	       };
+	       str = "." + str;
+	   }
+	   else {
+	     str = "";
+	   };
+	   str=sign + intToStr(intValue) + str;
+	   print(str);
+	};
     }
+
+    void LCD::printDec(double value) {
+        	printDec(value, 0);
+            }
+
+    void LCD::printDec(float value, uint8_t digits) {
+    	printDec((double) value, digits);
+        }
+
+    void LCD::printDec(float value) {
+	printDec(value, 0);
+    };
+
