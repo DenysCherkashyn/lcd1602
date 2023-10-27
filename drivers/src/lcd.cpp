@@ -279,7 +279,7 @@ std::string LCD::intToStr(int value) {
 	#endif
     }
 
-    void LCD::printDec(int value, uint8_t digits) {
+    void LCD::print(int value, uint8_t digits) {
 	std::string str;
 
 	str = intToStr(value);
@@ -291,11 +291,11 @@ std::string LCD::intToStr(int value) {
 	print(str);
     }
 
-    void LCD::printDec(int value) {
-    	printDec(value, 0);
+    void LCD::print(int value) {
+    	print(value, 0);
         }
 
-    void LCD::printDec(double value, uint8_t digits) {
+    void LCD::print(double value, uint8_t digits) {
 	int intValue = 0;
 	int fractValue = 0;
 
@@ -303,7 +303,7 @@ std::string LCD::intToStr(int value) {
 	std::string str;
 
 	if(value == 0){
-	    printDec(0, digits);
+	    print(0, digits);
 	}
 	else {
 	    if (value<0) {
@@ -341,15 +341,15 @@ std::string LCD::intToStr(int value) {
 	};
     }
 
-    void LCD::printDec(double value) {
-        	printDec(value, 0);
+    void LCD::print(double value) {
+        	print(value, 0);
             }
 
-    void LCD::printDec(float value, uint8_t digits) {
-    	printDec((double) value, digits);
+    void LCD::print(float value, uint8_t digits) {
+    	print((double) value, digits);
         }
 
-    void LCD::printDec(float value) {
-	printDec(value, 0);
+    void LCD::print(float value) {
+	print(value, 0);
     };
 

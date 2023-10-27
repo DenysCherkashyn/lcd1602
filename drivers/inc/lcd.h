@@ -85,12 +85,12 @@ class LCD final {
 
 	void print (uint16_t data);
 	void print (std::string);
-	void printDec (int, uint8_t);
-	void printDec (int);
-	void printDec (double, uint8_t);
-	void printDec (double);
-	void printDec (float, uint8_t);
-	void printDec (float);
+	void print (int, uint8_t);
+	void print (int);
+	void print (double, uint8_t);
+	void print (double);
+	void print (float, uint8_t);
+	void print (float);
 
 };
     
