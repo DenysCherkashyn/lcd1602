@@ -59,8 +59,6 @@ extern "C" {
     #define UTF8
     //#define CP1251
 
-    #define FLOAT_DIGITS_MAX 			8
-    #define DOUBLE_DIGITS_MAX			16
 
     //-- DISPLAY CONFIG MACROS --//
 

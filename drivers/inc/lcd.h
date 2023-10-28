@@ -43,7 +43,6 @@ class LCD final {
         void init();
         uint8_t checkSym(uint16_t&);
         std::string intToStr(int);
-        
             
         /*
                        //lcdReturn?
@@ -84,6 +83,7 @@ class LCD final {
 	void goTo (uint8_t, uint8_t);
 
 	void print (uint16_t data);
+	void print (std::string, uint8_t);
 	void print (std::string);
 	void print (int, uint8_t);
 	void print (int);
@@ -91,6 +91,7 @@ class LCD final {
 	void print (double);
 	void print (float, uint8_t);
 	void print (float);
+	void printHex(int data, uint8_t digits);
 
 };
     

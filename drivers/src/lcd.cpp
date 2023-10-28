@@ -176,7 +176,7 @@ uint8_t LCD::checkSym(uint16_t& in) {
 
 std::string LCD::intToStr(int value) {
     return std::to_string(value);
-}/**/
+}
 
 /*****************************************
  *
@@ -241,7 +241,6 @@ std::string LCD::intToStr(int value) {
 	    writeInstruction(0x80u | (line + position));
 	}
 
-
     void LCD::print (uint16_t data) {
 	setBit(RS_PORT, RS_PIN);
 	write(checkSym(data));
@@ -250,12 +249,13 @@ std::string LCD::intToStr(int value) {
 	#endif
     }
 
-
-    void LCD::print(std::string data){
+    void LCD::print(std::string data, uint8_t length){
 	uint16_t tmp = 0;
 	bool readyFlag = false;
 
 	setBit(RS_PORT, RS_PIN);
+
+	uint8_t i = (data.length()>length && length>0) ? length : data.length();
 	for(const char ch: data) {
 	    tmp |= ch;
 
@@ -272,11 +272,17 @@ std::string LCD::intToStr(int value) {
 	    write(checkSym(tmp));
 	    readyFlag = false;
 	    tmp = 0;
+	    i--;
+	    if(i==0) break;
 	};
-
 	#ifdef I2C_LCD_ADDRESS
 	    i2cDisconnect();
 	#endif
+	return;
+    }
+
+    void LCD::print(std::string data){
+	print(data, 0);
     }
 
     void LCD::print(int value, uint8_t digits) {
@@ -351,5 +357,21 @@ std::string LCD::intToStr(int value) {
 
     void LCD::print(float value) {
 	print(value, 0);
-    };
+    }
+
+    void LCD::printHex(int data, uint8_t  digits) {
+	uint8_t tmp = 0;
+	std::string str;
+
+	while (digits > 0) {
+	    tmp = (uint8_t)data & 0x0F;
+	    str = ((tmp == 0x0F) ? "F" : (tmp == 0x0E) ? "E" : (tmp == 0x0D) ? "D" : (tmp == 0x0C) ? "C" :\
+		(tmp == 0x0B) ? "B" : (tmp == 0x0A) ? "A" : (tmp == 0x09) ? "9" : (tmp == 0x08) ? "8" :\
+		(tmp == 0x07) ? "7" : (tmp == 0x06) ? "6" : (tmp == 0x05) ? "5" : (tmp == 0x04) ? "4" :\
+		(tmp == 0x03) ? "3" : (tmp == 0x02) ? "2" : (tmp == 0x01) ? "1" : "0") + str;
+		--digits;
+		data >>= 4u;
+	 };
+	 print(str);
+    }
 
