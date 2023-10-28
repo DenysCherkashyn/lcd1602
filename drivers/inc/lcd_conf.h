@@ -63,7 +63,7 @@ extern "C" {
     //-- DISPLAY CONFIG MACROS --//
 
     #define LINE_QUANTITY			2		    /*quantity of lines in LCD screen: 1, 2 or 4*/
-    #define LINE_LENGTH				16		    /*length of one LCD line */
+    #define LINE_LENGTH				40		    /*length of one line */
     #define SET_COURSOR                         1                   /* Show coursor by default: 1 - ON, 0 - OFF  */
     #define SET_BLINKING                        1                   /* Enable blinking for coursor by default: 1 - ON, 0 - OFF  */
     #define SET_SHIFT_DISPLAY                   0                   /* Shift display with new symbol: 1 - ON, 0 - OFF  */

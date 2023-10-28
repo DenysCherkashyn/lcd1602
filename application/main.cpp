@@ -41,11 +41,21 @@ int main(void)
 
   //lcd.print("2.25");
    //lcd.print(499999.97,1);
-   lcd.print("123456789123456789");
-  // lcd.printHex(-128746, 8);
+   lcd.print("1111111111");
+   lcd.print("2222222222");
+   lcd.print("3333333333");
+   lcd.print("4444444444");
+
+
+  lcd.goTo(1,41);
+ //lcd.shiftDisplayLeft(20);
+lcd.shiftCursorLeft(30);
+lcd.shiftCursorRight(4);
+lcd.print(" ");
+   // lcd.printHex(-128746, 8);
    //lcd.print((double)0xFFFE0916);
   //lcd.home();
-   lcd.goTo(1,17);
+  // lcd.goTo(1,17);
   // lcd.print("Україні-2023");
   // lcd.clearLine(2);
   // lcd.home();

@@ -251,12 +251,32 @@ std::string LCD::intToStr(int value) {
 	    writeInstruction(0x80u | (line + position));
 	}
 
-	void LCD::shiftCursorLeft () {
-
+	void LCD::shiftCursorLeft (uint8_t steps = 1) {
+	    if(steps == 0) steps = 1;
+	    for(uint8_t i=0; i < steps; ++i) {
+		writeInstruction(0x10);
+	    };
 	}
 
-	void LCD::shiftCursorRight () {
+	void LCD::shiftCursorRight (uint8_t steps = 1) {
+	    if(steps == 0) steps = 1;
+	    for(uint8_t i=0; i < steps; ++i) {
+		writeInstruction(0x14);
+	    };
+	}
 
+	void LCD::shiftDisplayLeft (uint8_t steps = 1) {
+	    if(steps == 0) steps = 1;
+	    for(uint8_t i=0; i < steps; ++i) {
+		writeInstruction(0x1C);
+	    };
+	}
+
+	void LCD::shiftDisplayRight (uint8_t steps = 1) {
+	    if(steps == 0) steps = 1;
+	    for(uint8_t i=0; i < steps; ++i) {
+		writeInstruction(0x18);
+	    };
 	}
 
     void LCD::print (uint16_t data) {

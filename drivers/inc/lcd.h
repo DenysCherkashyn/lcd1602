@@ -80,8 +80,10 @@ class LCD final {
 	void clearLine(uint8_t);
 	void home ();
 	void goTo (uint8_t, uint8_t);
-	void shiftCursorLeft();
-	void shiftCursorRight();
+	void shiftCursorLeft(uint8_t);
+	void shiftCursorRight(uint8_t);
+	void shiftDisplayLeft(uint8_t);
+	void shiftDisplayRight(uint8_t);
 
 
 	void print (uint16_t data);
