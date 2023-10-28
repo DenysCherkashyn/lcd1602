@@ -45,15 +45,13 @@ class LCD final {
         std::string intToStr(int);
             
         /*
-                       //lcdReturn?
         void setMode ();
 
 
         void loadChar ();
         void drawChar ();
         uint8_t[] getPosition();
-        void cursorShiftLeft(uint8_t);
-        void cursorShiftRight(uint8_t);
+
         void backspace ();
 
 
@@ -79,8 +77,12 @@ class LCD final {
 	void on ();
 	void off ();
 	void clear ();
+	void clearLine(uint8_t);
 	void home ();
 	void goTo (uint8_t, uint8_t);
+	void shiftCursorLeft();
+	void shiftCursorRight();
+
 
 	void print (uint16_t data);
 	void print (std::string, uint8_t);

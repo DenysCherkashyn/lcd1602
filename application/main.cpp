@@ -35,19 +35,20 @@ int main(void)
   LCD& lcd = LCD::getInstance(masterWriteX);
   //  LCD& lcd = LCD::getInstance();
 
-   lcd.off();
-   lcd.on();
+ //  lcd.off();
+//   lcd.on();
 //   lcd.backlightOff();
 
   //lcd.print("2.25");
    //lcd.print(499999.97,1);
-   lcd.print("0x");
-   lcd.printHex(-128746, 8);
+   lcd.print("123456789123456789");
+  // lcd.printHex(-128746, 8);
    //lcd.print((double)0xFFFE0916);
-   lcd.home();
-   lcd.goTo(2,4);
-   lcd.print("Україні-2023");
-   lcd.home();
+  //lcd.home();
+   lcd.goTo(1,17);
+  // lcd.print("Україні-2023");
+  // lcd.clearLine(2);
+  // lcd.home();
 
    return 0;
    /**/

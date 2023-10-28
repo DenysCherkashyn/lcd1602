@@ -223,6 +223,17 @@ std::string LCD::intToStr(int value) {
     	    delay_us(CLRSCR_CYCLE_TIME);
     	}
 
+    	void LCD::clearLine(uint8_t line) {
+    	    std::string str;
+    	    if(line == 0 || line > LINE_QUANTITY) return;
+    	    for (uint8_t i = 0; i<LINE_LENGTH; ++i) {
+    		str +=" ";
+    	    };
+    	    goTo(line, 0);
+    	    print(str);
+    	    goTo(line, 0);
+    	}
+
     	void LCD::home( ) {
     	    	    writeInstruction(RETURN_HOME);
     	    	    delay_us(RETHOME_CYCLE_TIME);
@@ -236,9 +247,16 @@ std::string LCD::intToStr(int value) {
 	    case 4u: line = START_POSITION_LINE_4; break;
 	    default: return;
 	    };
-	    position = (position > (LINE_LENGTH-1)) ? (LINE_LENGTH-1) :
-		    (position < 0) ? 0 : position;
+	    position = (position > (LINE_LENGTH-1)) ? (LINE_LENGTH-1) : (position < 0) ? 0 : position;
 	    writeInstruction(0x80u | (line + position));
+	}
+
+	void LCD::shiftCursorLeft () {
+
+	}
+
+	void LCD::shiftCursorRight () {
+
 	}
 
     void LCD::print (uint16_t data) {
