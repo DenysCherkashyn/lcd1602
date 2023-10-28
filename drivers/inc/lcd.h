@@ -13,7 +13,8 @@ class LCD final {
      private:
 	const std::unordered_map<uint16_t, uint8_t> charTable = CHAR_TABLE;
         bool initialized = false;
-        uint8_t lastTransferDataByte = 0x00;
+        uint8_t lastTransferDataByte;
+        uint8_t pointerAddr;
 	#ifdef I2C_LCD_ADDRESS
 	    void (*i2cMasterWrite) (uint16_t, uint8_t*) = nullptr;
 	#endif
@@ -34,8 +35,6 @@ class LCD final {
         void setHigh (uint8_t);
         void strobe ();
         void delay_us (uint32_t);
-        void setCommandMode ();
-        void setWriteDataMode ();
         void write(uint8_t);
         void writeInstruction(uint8_t);
         void writeCharacter(uint8_t);

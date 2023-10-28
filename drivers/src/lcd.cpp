@@ -89,14 +89,6 @@
             while(us>0) --us;
     }
 
-    void LCD::setCommandMode ()  {
-	resetBit(RS_PORT, RS_PIN);
-    };
-
-    void LCD::setWriteDataMode ()  {
-	setBit(RS_PORT, RS_PIN);
-    };
-
 void LCD::write (uint8_t data) {
     setHigh(data);
     strobe();
@@ -161,6 +153,8 @@ void LCD::init ( ) {
         };
         strobe();
         home();
+        lastTransferDataByte = 0x00;
+        pointerAddr = 0x00;
         initialized = true;
 
         #ifdef I2C_LCD_ADDRESS
