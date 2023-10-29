@@ -14,7 +14,8 @@ class LCD final {
 	const std::unordered_map<uint16_t, uint8_t> charTable = CHAR_TABLE;
         bool initialized = false;
         uint8_t lastTransferDataByte;
-        uint8_t pointerAddr;
+        uint8_t currentLine;
+        uint8_t currentPosition;
 	#ifdef I2C_LCD_ADDRESS
 	    void (*i2cMasterWrite) (uint16_t, uint8_t*) = nullptr;
 	#endif
@@ -37,7 +38,6 @@ class LCD final {
         void delay_us (uint32_t);
         void write(uint8_t);
         void writeInstruction(uint8_t);
-        void writeCharacter(uint8_t);
         void config(uint8_t);
         void init();
         uint8_t checkSym(uint16_t&);
@@ -45,19 +45,9 @@ class LCD final {
             
         /*
         void setMode ();
-
-
         void loadChar ();
         void drawChar ();
-        uint8_t[] getPosition();
-
         void backspace ();
-
-
-        void printInteger (uint32_t);
-        void printOct (uint32_t, uint_8);
-        void printHex (uint32_t, uint_8)';
-        void printBin (uint32_t, uint_8);
 
         drawBar(uint8_t);
         clearBar(uint8_t);?
@@ -83,6 +73,11 @@ class LCD final {
 	void shiftCursorRight(uint8_t);
 	void shiftDisplayLeft(uint8_t);
 	void shiftDisplayRight(uint8_t);
+	uint8_t getLine();
+	uint8_t getCursorPosition();
+	uint8_t getLineQuantity();
+	uint8_t getCursorPositionMax();
+	bool isEndOfLine();
 
 
 	void print (uint16_t data);

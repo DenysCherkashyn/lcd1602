@@ -105,14 +105,6 @@ void LCD::writeInstruction(uint8_t data) {
     #endif
 }
 
-void LCD::writeCharacter(uint8_t data) {
-   setBit(RS_PORT, RS_PIN);
-   write(data);
-   #ifdef I2C_LCD_ADDRESS
-       i2cDisconnect();
-   #endif
-}
-
 void LCD::config (uint8_t data) {
     setHigh(data);
     strobe();
@@ -153,8 +145,6 @@ void LCD::init ( ) {
         };
         strobe();
         home();
-        lastTransferDataByte = 0x00;
-        pointerAddr = 0x00;
         initialized = true;
 
         #ifdef I2C_LCD_ADDRESS
@@ -215,6 +205,8 @@ std::string LCD::intToStr(int value) {
     	void LCD::clear( ) {
     	    writeInstruction(CLEAR_DISPLAY);
     	    delay_us(CLRSCR_CYCLE_TIME);
+    	    currentLine = 1u;
+    	    currentPosition = 0;
     	}
 
     	void LCD::clearLine(uint8_t line) {
@@ -231,86 +223,134 @@ std::string LCD::intToStr(int value) {
     	void LCD::home( ) {
     	    	    writeInstruction(RETURN_HOME);
     	    	    delay_us(RETHOME_CYCLE_TIME);
+    	    	    currentLine = 1u;
+    	    	    currentPosition = 0;
     	    	}
 
 	void LCD::goTo(uint8_t line, uint8_t position){
-	    switch (line){
-	    case 1u: line = START_POSITION_LINE_1; break;
-	    case 2u: line = START_POSITION_LINE_2; break;
-	    case 3u: line = START_POSITION_LINE_3; break;
-	    case 4u: line = START_POSITION_LINE_4; break;
-	    default: return;
+	    if(line > 0 && line<=LINE_QUANTITY) {
+		currentLine = line;
+		switch (line){
+		    case 1u: line = START_POSITION_LINE_1; break;
+		    case 2u: line = START_POSITION_LINE_2; break;
+		    case 3u: line = START_POSITION_LINE_3; break;
+		    case 4u: line = START_POSITION_LINE_4; break;
+		};
+		position = (position > CURSOR_POSITION_MAX) ? CURSOR_POSITION_MAX : (position < 0) ? 0 : position;
+		currentPosition = position;
+		writeInstruction(0x80u | (line + position));
 	    };
-	    position = (position > (LINE_LENGTH-1)) ? (LINE_LENGTH-1) : (position < 0) ? 0 : position;
-	    writeInstruction(0x80u | (line + position));
 	}
 
-	void LCD::shiftCursorLeft (uint8_t steps = 1) {
-	    if(steps == 0) steps = 1;
-	    for(uint8_t i=0; i < steps; ++i) {
+	void LCD::shiftCursorLeft (uint8_t pos) {
+	    uint8_t i=0;
+	    while(i < pos && currentPosition>0) {
 		writeInstruction(0x10);
+		++i;
+		--currentPosition;
 	    };
 	}
 
-	void LCD::shiftCursorRight (uint8_t steps = 1) {
-	    if(steps == 0) steps = 1;
-	    for(uint8_t i=0; i < steps; ++i) {
+	void LCD::shiftCursorRight (uint8_t pos) {
+	    uint8_t i=0;
+	    while(i < pos && currentPosition < CURSOR_POSITION_MAX) {
+		writeInstruction(0x14);
+	    	++i;
+	    	++currentPosition;
+	    };
+
+
+	    if(pos == 0) pos = 1;
+	    for(uint8_t i=0; i < pos; ++i) {
 		writeInstruction(0x14);
 	    };
 	}
 
-	void LCD::shiftDisplayLeft (uint8_t steps = 1) {
-	    if(steps == 0) steps = 1;
-	    for(uint8_t i=0; i < steps; ++i) {
-		writeInstruction(0x1C);
-	    };
-	}
-
-	void LCD::shiftDisplayRight (uint8_t steps = 1) {
-	    if(steps == 0) steps = 1;
-	    for(uint8_t i=0; i < steps; ++i) {
+	void LCD::shiftDisplayLeft (uint8_t pos = 1) {
+	    if(pos == 0) pos = 1;
+	    for(uint8_t i=0; i < pos; ++i) {
 		writeInstruction(0x18);
 	    };
 	}
 
+	void LCD::shiftDisplayRight (uint8_t pos = 1) {
+	    if(pos == 0) pos = 1;
+	    for(uint8_t i=0; i < pos; ++i) {
+		writeInstruction(0x1C);
+	    };
+	}
+
+    uint8_t LCD::getLine() {
+	return currentLine;
+    }
+
+    uint8_t LCD::getCursorPosition() {
+    	return currentPosition;
+    }
+
+    uint8_t LCD::getLineQuantity() {
+    	return LINE_QUANTITY;
+    }
+
+    uint8_t LCD::getCursorPositionMax() {
+    	return CURSOR_POSITION_MAX;
+    }
+
+    bool LCD::isEndOfLine() {
+	return (currentPosition >= CURSOR_POSITION_MAX) ? true : false;
+    }
+
+
     void LCD::print (uint16_t data) {
-	setBit(RS_PORT, RS_PIN);
-	write(checkSym(data));
-	#ifdef I2C_LCD_ADDRESS
-	    i2cDisconnect();
-	#endif
+	if(currentPosition <= CURSOR_POSITION_MAX) {
+	    setBit(RS_PORT, RS_PIN);
+	    write(checkSym(data));
+	    if(currentPosition == CURSOR_POSITION_MAX) {
+		goTo(currentLine, CURSOR_POSITION_MAX);
+	    }
+	    else {
+		++currentPosition;
+	    };
+	    #ifdef I2C_LCD_ADDRESS
+		i2cDisconnect();
+	    #endif
+	}
     }
 
     void LCD::print(std::string data, uint8_t length){
+	uint8_t i = 0;
 	uint16_t tmp = 0;
-	bool readyFlag = false;
+	    bool readyFlag = false;
 
-	setBit(RS_PORT, RS_PIN);
+	    setBit(RS_PORT, RS_PIN);
+	    length = (data.length()>length && length>0) ? length : data.length();
 
-	uint8_t i = (data.length()>length && length>0) ? length : data.length();
-	for(const char ch: data) {
-	    tmp |= ch;
+	    for(const char ch : data) {
+		tmp |= ch;
 
-	    #ifdef UTF8
-		if(!readyFlag) {
-		    readyFlag = true;
-		    if (ch >= 0xC2) {
-		      tmp <<= 8u;
-		      continue;
+		#ifdef UTF8
+		    if(!readyFlag) {
+			readyFlag = true;
+			if (ch >= 0xC2) {
+			  tmp <<= 8u;
+			  continue;
+			};
 		    };
-		};
-	    #endif
+		#endif
 
-	    write(checkSym(tmp));
-	    readyFlag = false;
-	    tmp = 0;
-	    i--;
-	    if(i==0) break;
-	};
-	#ifdef I2C_LCD_ADDRESS
-	    i2cDisconnect();
-	#endif
-	return;
+		write(checkSym(tmp));
+		++currentPosition;
+		++i;
+		if (i >= length || currentPosition > CURSOR_POSITION_MAX) break;
+		readyFlag = false;
+		tmp = 0;
+	    };
+	    if(currentPosition > CURSOR_POSITION_MAX) {
+		goTo(currentLine, CURSOR_POSITION_MAX);
+	    }
+	    #ifdef I2C_LCD_ADDRESS
+		i2cDisconnect();
+	    #endif
     }
 
     void LCD::print(std::string data){
