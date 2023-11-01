@@ -221,11 +221,11 @@ std::string LCD::intToStr(int value) {
     	}
 
     	void LCD::home( ) {
-    	    	    writeInstruction(RETURN_HOME);
-    	    	    delay_us(RETHOME_CYCLE_TIME);
-    	    	    currentLine = 1u;
-    	    	    currentPosition = 0;
-    	    	}
+    	    writeInstruction(RETURN_HOME);
+    	    delay_us(RETHOME_CYCLE_TIME);
+    	    currentLine = 1u;
+    	    currentPosition = 0;
+    	}
 
 	void LCD::goTo(uint8_t line, uint8_t position){
 	    if(line > 0 && line<=LINE_QUANTITY) {
@@ -242,7 +242,7 @@ std::string LCD::intToStr(int value) {
 	    };
 	}
 
-	void LCD::shiftCursorLeft (uint8_t pos) {
+	void LCD::shiftCursorLeft (uint8_t pos = 1) {
 	    uint8_t i=0;
 	    while(i < pos && currentPosition>0) {
 		writeInstruction(0x10);
@@ -251,20 +251,26 @@ std::string LCD::intToStr(int value) {
 	    };
 	}
 
-	void LCD::shiftCursorRight (uint8_t pos) {
+/*	void LCD::shiftCursorLeft () {
+	    shiftCursorLeft(1);
+	}/**/
+
+	void LCD::shiftCursorRight (uint8_t pos = 1) {
 	    uint8_t i=0;
 	    while(i < pos && currentPosition < CURSOR_POSITION_MAX) {
 		writeInstruction(0x14);
 	    	++i;
 	    	++currentPosition;
 	    };
-
-
 	    if(pos == 0) pos = 1;
 	    for(uint8_t i=0; i < pos; ++i) {
 		writeInstruction(0x14);
 	    };
 	}
+
+/*	void LCD::shiftCursorRight (uint8_t pos = 1) {
+	    shiftCursorRight(1);
+	}	/**/
 
 	void LCD::shiftDisplayLeft (uint8_t pos = 1) {
 	    if(pos == 0) pos = 1;
@@ -302,15 +308,11 @@ std::string LCD::intToStr(int value) {
 
 
     void LCD::print (uint16_t data) {
-	if(currentPosition <= CURSOR_POSITION_MAX) {
+	if(currentPosition < CURSOR_POSITION_MAX) {
 	    setBit(RS_PORT, RS_PIN);
 	    write(checkSym(data));
-	    if(currentPosition == CURSOR_POSITION_MAX) {
-		goTo(currentLine, CURSOR_POSITION_MAX);
-	    }
-	    else {
-		++currentPosition;
-	    };
+	    ++currentPosition;
+
 	    #ifdef I2C_LCD_ADDRESS
 		i2cDisconnect();
 	    #endif
@@ -318,8 +320,9 @@ std::string LCD::intToStr(int value) {
     }
 
     void LCD::print(std::string data, uint8_t length){
-	uint8_t i = 0;
-	uint16_t tmp = 0;
+	if(currentPosition < CURSOR_POSITION_MAX) {
+	    uint8_t i = 0;
+	    uint16_t tmp = 0;
 	    bool readyFlag = false;
 
 	    setBit(RS_PORT, RS_PIN);
@@ -341,16 +344,14 @@ std::string LCD::intToStr(int value) {
 		write(checkSym(tmp));
 		++currentPosition;
 		++i;
-		if (i >= length || currentPosition > CURSOR_POSITION_MAX) break;
+		if (i >= length || currentPosition >= CURSOR_POSITION_MAX) break;
 		readyFlag = false;
 		tmp = 0;
 	    };
-	    if(currentPosition > CURSOR_POSITION_MAX) {
-		goTo(currentLine, CURSOR_POSITION_MAX);
-	    }
 	    #ifdef I2C_LCD_ADDRESS
 		i2cDisconnect();
 	    #endif
+	};
     }
 
     void LCD::print(std::string data){
@@ -358,15 +359,17 @@ std::string LCD::intToStr(int value) {
     }
 
     void LCD::print(int value, uint8_t digits) {
-	std::string str;
+	if(currentPosition < CURSOR_POSITION_MAX) {
+	    std::string str;
 
-	str = intToStr(value);
-	if(digits>0) str+=".";
-	while(digits>0) {
-	    str+="0";
-	    --digits;
+	    str = intToStr(value);
+	    if(digits>0) str+=".";
+	    while(digits>0) {
+		str+="0";
+		--digits;
+	    };
+	    print(str);
 	};
-	print(str);
     }
 
     void LCD::print(int value) {
@@ -374,34 +377,30 @@ std::string LCD::intToStr(int value) {
         }
 
     void LCD::print(double value, uint8_t digits) {
-	int intValue = 0;
-	int fractValue = 0;
-
-	std::string sign="";
-	std::string str;
-
 	if(value == 0){
 	    print(0, digits);
 	}
-	else {
+	else if(currentPosition < CURSOR_POSITION_MAX) {
+	    int intValue = 0;
+	    int fractValue = 0;
+	    std::string str;
+	    std::string sign;
+
 	    if (value<0) {
 		sign="-";
 		value *=(-1);
 	    };
-
 	    intValue = (int) value;
-
 	    value = value - (double)intValue;
 	    for (uint8_t i=0; i < digits; ++i){
 		value*=10;
 	    };
 	    fractValue = (int) value;
-
-	   if((value - (double)fractValue) >= 0.4999){
-	       ++fractValue;
-	   };
-	   str = intToStr(fractValue);
-	   if( fractValue>=1 && str.length() > digits) {
+	    if((value - (double)fractValue) >= 0.4999){
+		++fractValue;
+	    };
+	    str = intToStr(fractValue);
+	    if( fractValue>=1 && str.length() > digits) {
 	       ++intValue;
 	       str.erase(0, 1);
 	   };
@@ -432,18 +431,26 @@ std::string LCD::intToStr(int value) {
     }
 
     void LCD::printHex(int data, uint8_t  digits) {
-	uint8_t tmp = 0;
-	std::string str;
+	if(currentPosition < CURSOR_POSITION_MAX) {
+	    uint8_t tmp = 0;
+	    std::string str;
 
-	while (digits > 0) {
-	    tmp = (uint8_t)data & 0x0F;
-	    str = ((tmp == 0x0F) ? "F" : (tmp == 0x0E) ? "E" : (tmp == 0x0D) ? "D" : (tmp == 0x0C) ? "C" :\
-		(tmp == 0x0B) ? "B" : (tmp == 0x0A) ? "A" : (tmp == 0x09) ? "9" : (tmp == 0x08) ? "8" :\
-		(tmp == 0x07) ? "7" : (tmp == 0x06) ? "6" : (tmp == 0x05) ? "5" : (tmp == 0x04) ? "4" :\
-		(tmp == 0x03) ? "3" : (tmp == 0x02) ? "2" : (tmp == 0x01) ? "1" : "0") + str;
-		--digits;
-		data >>= 4u;
-	 };
-	 print(str);
+	    while (digits > 0) {
+		tmp = (uint8_t)data & 0x0F;
+		str = ((tmp == 0x0F) ? "F" : (tmp == 0x0E) ? "E" : (tmp == 0x0D) ? "D" : (tmp == 0x0C) ? "C" :\
+		    (tmp == 0x0B) ? "B" : (tmp == 0x0A) ? "A" : (tmp == 0x09) ? "9" : (tmp == 0x08) ? "8" :\
+		    (tmp == 0x07) ? "7" : (tmp == 0x06) ? "6" : (tmp == 0x05) ? "5" : (tmp == 0x04) ? "4" :\
+		    (tmp == 0x03) ? "3" : (tmp == 0x02) ? "2" : (tmp == 0x01) ? "1" : "0") + str;
+		    --digits;
+		    data >>= 4u;
+	     };
+	     print(str);
+	};
+    }
+
+    void LCD::backspace() {
+	shiftCursorLeft();
+	print(" ");
+	shiftCursorLeft();
     }
 

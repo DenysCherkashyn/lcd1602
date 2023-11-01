@@ -47,8 +47,6 @@ class LCD final {
         void setMode ();
         void loadChar ();
         void drawChar ();
-        void backspace ();
-
         drawBar(uint8_t);
         clearBar(uint8_t);?
         */
@@ -70,9 +68,13 @@ class LCD final {
 	void home ();
 	void goTo (uint8_t, uint8_t);
 	void shiftCursorLeft(uint8_t);
+	//void shiftCursorLeft();
 	void shiftCursorRight(uint8_t);
+	//void shiftCursorRight();
 	void shiftDisplayLeft(uint8_t);
+	//void shiftDisplayLeft();
 	void shiftDisplayRight(uint8_t);
+	//void shiftDisplayRight();
 	uint8_t getLine();
 	uint8_t getCursorPosition();
 	uint8_t getLineQuantity();
@@ -89,7 +91,14 @@ class LCD final {
 	void print (double);
 	void print (float, uint8_t);
 	void print (float);
+	//void printR (auto);
 	void printHex(int data, uint8_t digits);
+	//void printHexR (auto);
+	void backspace();
+	//statusBar(uint8_t);
+	//processingBar();
+	//loadChar(???);
+	//drawChar(???);
 
 };
     

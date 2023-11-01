@@ -42,6 +42,7 @@ int main(void)
   lcd.print("Поз.курсора:");
   lcd.print(lcd.getCursorPositionMax()+1, 1);
 
+
    return 0;
    /**/
    /* Loop forever */
