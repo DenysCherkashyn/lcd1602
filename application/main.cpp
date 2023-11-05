@@ -35,12 +35,29 @@ int main(void)
   LCD& lcd = LCD::getInstance(masterWriteX);
   //  LCD& lcd = LCD::getInstance();
 
-
+  lcd.printCGROM(0xFF);
+  lcd.printCGROM(0xFF);
+  lcd.printCGROM(0xFF);
   lcd.print("Линий LCD:  ");
   lcd.print(lcd.getLineQuantity(), 1);
+  lcd.shiftDisplayLeft(3);
+  lcd.print(lcd.getLineQuantity(), 1);
+  lcd.backspace();
+
+  lcd.shiftDisplayLeft(15);
   lcd.goTo(2, 0);
-  lcd.print("Поз.курсора:");
-  lcd.print(lcd.getCursorPositionMax()+1, 1);
+
+  std::string str;
+  str += "Progress " + std::to_string(10);
+
+  lcd.print(str);
+
+  lcd.progressBar(1.78f, 'х');
+
+  lcd.printCGROM(0xFF);
+
+  //lcd.print("Поз.курсора:");
+  //lcd.print(lcd.getCursorPositionMax()+1, 1);
 
 
    return 0;

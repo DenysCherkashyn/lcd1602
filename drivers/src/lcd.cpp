@@ -136,14 +136,11 @@ void LCD::init ( ) {
         write(CLEAR_DISPLAY);		    //clear display
         write(ENTRY_MODE_DEFAULT);          //display entry mode sets
         delay_us(50);
-        write(DISPLAY_CONTROL_DEFAULT|DISPLAY_ON); //display on
-        delay_us(50);
-        write(DISPLAY_CONTROL_DEFAULT);		 //display off
         if(START_WITH_BACKLIGHT_ON)  {
             backlightOn();
             write(DISPLAY_CONTROL_DEFAULT|DISPLAY_ON); //display on
         };
-        strobe();
+     // strobe();
         home();
         initialized = true;
 
@@ -160,6 +157,22 @@ uint8_t LCD::checkSym(uint16_t& in) {
 
 std::string LCD::intToStr(int value) {
     return std::to_string(value);
+}
+
+void LCD::alignDisplayPosition() {
+    if(cursorPosition < displayPosition){
+	uint8_t shift = displayPosition-cursorPosition;
+	if (shift > CURSOR_POSITION_MAX/2) {
+	    shift = LINE_LENGTH - shift;
+	    shiftDisplayLeft(shift);
+	}
+	else {
+	    shiftDisplayRight(shift);
+	};
+    }
+    else if (SET_SHIFT_DISPLAY && cursorPosition > (displayPosition+SCREEN_WIDTH-1)) {
+	shiftDisplayLeft(cursorPosition - (displayPosition+SCREEN_WIDTH-1));
+    };
 }
 
 /*****************************************
@@ -205,8 +218,9 @@ std::string LCD::intToStr(int value) {
     	void LCD::clear( ) {
     	    writeInstruction(CLEAR_DISPLAY);
     	    delay_us(CLRSCR_CYCLE_TIME);
-    	    currentLine = 1u;
-    	    currentPosition = 0;
+    	    line = 1u;
+    	    cursorPosition = 0;
+    	    displayPosition = 1;
     	}
 
     	void LCD::clearLine(uint8_t line) {
@@ -223,75 +237,93 @@ std::string LCD::intToStr(int value) {
     	void LCD::home( ) {
     	    writeInstruction(RETURN_HOME);
     	    delay_us(RETHOME_CYCLE_TIME);
-    	    currentLine = 1u;
-    	    currentPosition = 0;
+    	    line = 1u;
+    	    cursorPosition = 0;
+    	    displayPosition = 0;
     	}
 
-	void LCD::goTo(uint8_t line, uint8_t position){
-	    if(line > 0 && line<=LINE_QUANTITY) {
-		currentLine = line;
-		switch (line){
-		    case 1u: line = START_POSITION_LINE_1; break;
-		    case 2u: line = START_POSITION_LINE_2; break;
-		    case 3u: line = START_POSITION_LINE_3; break;
-		    case 4u: line = START_POSITION_LINE_4; break;
-		};
-		position = (position > CURSOR_POSITION_MAX) ? CURSOR_POSITION_MAX : (position < 0) ? 0 : position;
-		currentPosition = position;
-		writeInstruction(0x80u | (line + position));
+	void LCD::goTo(uint8_t lineNum, uint8_t position){
+	    if(lineNum > LINE_QUANTITY) return;
+	    line = lineNum;
+	    switch (lineNum){
+		    case 1u: lineNum = START_POSITION_LINE_1; break;
+		    case 2u: lineNum = START_POSITION_LINE_2; break;
+		    case 3u: lineNum = START_POSITION_LINE_3; break;
+		    case 4u: lineNum = START_POSITION_LINE_4; break;
 	    };
+		position = (position > CURSOR_POSITION_MAX) ? CURSOR_POSITION_MAX : (position < 0) ? 0 : position;
+		writeInstruction(0x80u | (lineNum + position));
+		cursorPosition = position;
+		alignDisplayPosition();
 	}
 
-	void LCD::shiftCursorLeft (uint8_t pos = 1) {
+	void LCD::shiftCursorLeft (uint8_t pos) {
 	    uint8_t i=0;
-	    while(i < pos && currentPosition>0) {
+	    while(i < pos && cursorPosition>0) {
 		writeInstruction(0x10);
 		++i;
-		--currentPosition;
+		--cursorPosition;
+		if(cursorPosition < displayPosition) shiftDisplayRight();
 	    };
 	}
 
-/*	void LCD::shiftCursorLeft () {
+	void LCD::shiftCursorLeft () {
 	    shiftCursorLeft(1);
-	}/**/
+	}
 
-	void LCD::shiftCursorRight (uint8_t pos = 1) {
+	void LCD::shiftCursorRight (uint8_t pos) {
 	    uint8_t i=0;
-	    while(i < pos && currentPosition < CURSOR_POSITION_MAX) {
+	    if(pos == 0) pos = 1;
+	    while(i < pos && cursorPosition < CURSOR_POSITION_MAX) {
 		writeInstruction(0x14);
 	    	++i;
-	    	++currentPosition;
-	    };
-	    if(pos == 0) pos = 1;
-	    for(uint8_t i=0; i < pos; ++i) {
-		writeInstruction(0x14);
+	    	++cursorPosition;
+	    	alignDisplayPosition();
 	    };
 	}
 
-/*	void LCD::shiftCursorRight (uint8_t pos = 1) {
+	void LCD::shiftCursorRight () {
 	    shiftCursorRight(1);
-	}	/**/
+	}
 
-	void LCD::shiftDisplayLeft (uint8_t pos = 1) {
+	void LCD::shiftDisplayLeft (uint8_t pos) {
 	    if(pos == 0) pos = 1;
 	    for(uint8_t i=0; i < pos; ++i) {
 		writeInstruction(0x18);
+		++displayPosition;
+		if(displayPosition > CURSOR_POSITION_MAX) displayPosition = 0;
 	    };
 	}
 
-	void LCD::shiftDisplayRight (uint8_t pos = 1) {
+	void LCD::shiftDisplayLeft () {
+	    shiftDisplayLeft(1);
+	}
+
+	void LCD::shiftDisplayRight (uint8_t pos) {
 	    if(pos == 0) pos = 1;
 	    for(uint8_t i=0; i < pos; ++i) {
 		writeInstruction(0x1C);
+		if(displayPosition == 0) {
+		    displayPosition = LINE_LENGTH;
+		};
+		--displayPosition;
 	    };
 	}
 
+	void LCD::shiftDisplayRight () {
+	    shiftDisplayRight(1);
+	}
+
     uint8_t LCD::getLine() {
-	return currentLine;
+	return line;
     }
 
     uint8_t LCD::getCursorPosition() {
-    	return currentPosition;
+    	return cursorPosition;
+    }
+
+    uint8_t LCD::getDisplayPosition() {
+    	return displayPosition;
     }
 
     uint8_t LCD::getLineQuantity() {
@@ -303,29 +335,31 @@ std::string LCD::intToStr(int value) {
     }
 
     bool LCD::isEndOfLine() {
-	return (currentPosition >= CURSOR_POSITION_MAX) ? true : false;
+	return (cursorPosition >= CURSOR_POSITION_MAX) ? true : false;
     }
 
-
-    void LCD::print (uint16_t data) {
-	if(currentPosition < CURSOR_POSITION_MAX) {
+    void LCD::printCGROM (uint8_t data) {
+	if(cursorPosition < CURSOR_POSITION_MAX) {
 	    setBit(RS_PORT, RS_PIN);
-	    write(checkSym(data));
-	    ++currentPosition;
-
+	    write(data);
+	    ++cursorPosition;
+	    alignDisplayPosition();
 	    #ifdef I2C_LCD_ADDRESS
 		i2cDisconnect();
 	    #endif
-	}
+	};
+    };
+
+    void LCD::printCh (uint16_t data) {
+	printCGROM(checkSym(data));
     }
 
     void LCD::print(std::string data, uint8_t length){
-	if(currentPosition < CURSOR_POSITION_MAX) {
+	if(cursorPosition < CURSOR_POSITION_MAX) {
 	    uint8_t i = 0;
 	    uint16_t tmp = 0;
 	    bool readyFlag = false;
 
-	    setBit(RS_PORT, RS_PIN);
 	    length = (data.length()>length && length>0) ? length : data.length();
 
 	    for(const char ch : data) {
@@ -341,13 +375,15 @@ std::string LCD::intToStr(int value) {
 		    };
 		#endif
 
+		setBit(RS_PORT, RS_PIN);
 		write(checkSym(tmp));
-		++currentPosition;
+		++cursorPosition;
 		++i;
-		if (i >= length || currentPosition >= CURSOR_POSITION_MAX) break;
+		if (i >= length || cursorPosition >= CURSOR_POSITION_MAX) break;
 		readyFlag = false;
 		tmp = 0;
 	    };
+	    alignDisplayPosition();
 	    #ifdef I2C_LCD_ADDRESS
 		i2cDisconnect();
 	    #endif
@@ -359,7 +395,7 @@ std::string LCD::intToStr(int value) {
     }
 
     void LCD::print(int value, uint8_t digits) {
-	if(currentPosition < CURSOR_POSITION_MAX) {
+	if(cursorPosition < CURSOR_POSITION_MAX) {
 	    std::string str;
 
 	    str = intToStr(value);
@@ -380,7 +416,7 @@ std::string LCD::intToStr(int value) {
 	if(value == 0){
 	    print(0, digits);
 	}
-	else if(currentPosition < CURSOR_POSITION_MAX) {
+	else if(cursorPosition < CURSOR_POSITION_MAX) {
 	    int intValue = 0;
 	    int fractValue = 0;
 	    std::string str;
@@ -431,7 +467,7 @@ std::string LCD::intToStr(int value) {
     }
 
     void LCD::printHex(int data, uint8_t  digits) {
-	if(currentPosition < CURSOR_POSITION_MAX) {
+	if(cursorPosition < CURSOR_POSITION_MAX) {
 	    uint8_t tmp = 0;
 	    std::string str;
 
@@ -453,4 +489,36 @@ std::string LCD::intToStr(int value) {
 	print(" ");
 	shiftCursorLeft();
     }
+
+    void LCD::progressBar(float percentProgress, uint16_t symbol) {
+	 std::string str;
+	 uint8_t i = 0;
+	 uint8_t tmp;
+
+	 if (percentProgress>1) percentProgress = 1;
+	 tmp = (uint8_t)(percentProgress * (float)PROGRESS_BAR_WIDTH);
+	 symbol = checkSym(symbol);
+	 goTo(line, displayPosition);
+	 while(i < tmp) {
+	   printCGROM(symbol);
+	   ++i;
+	 };
+	 tmp = PROGRESS_BAR_WIDTH - i;
+	 i = 0;
+	 while(i < tmp) {
+	     str +=" ";
+	     ++i;
+	 };
+	 tmp = (uint8_t)(percentProgress*100);
+	 if (tmp < 100) str += " ";
+	 str = str + std::to_string(tmp) + "%";
+	 print(str);
+	 if (SET_SHIFT_DISPLAY && tmp == 100) shiftDisplayRight(1);
+    }
+
+    void LCD::progressBar(float percentProgress) {
+	progressBar(percentProgress, 0x23);
+    }
+
+
 

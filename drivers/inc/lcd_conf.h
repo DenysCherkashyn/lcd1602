@@ -64,12 +64,13 @@ extern "C" {
 
     #define LINE_QUANTITY			2		    /*quantity of lines in LCD screen: 1, 2 or 4*/
     #define LINE_LENGTH				40		    /*length of one line */
+    #define SCREEN_WIDTH			16		    /*screen width*/
     #define SET_COURSOR                         1                   /* Show coursor by default: 1 - ON, 0 - OFF  */
-    #define SET_BLINKING                        1                   /* Enable blinking for coursor by default: 1 - ON, 0 - OFF  */
-    #define SET_SHIFT_DISPLAY                   0                   /* Shift display with new symbol: 1 - ON, 0 - OFF  */
-   // #define SET_SHIFT_INCREMENT                 1                   /* Shift coursor for next new symbol adress: 1 - by incrementing, 0 - by decrementing */
+    #define SET_BLINKING                        0                   /* Enable blinking for coursor by default: 1 - ON, 0 - OFF  */
+    #define SET_SHIFT_DISPLAY                   1                   /* Move the display if the cursor position goes beyond the right screen border.: 1 - ON, 0 - OFF  */
+   // #define SET_SHIFT_INCREMENT               1                   /* Shift coursor for next new symbol adress: 1 - by incrementing, 0 - by decrementing */
     
-    #define START_WITH_BACKLIGHT_ON		1			/*Backlight on automaticaly after LCD-initalization */
+    #define START_WITH_BACKLIGHT_ON		1		    /*Backlight on automaticaly after LCD-initalization */
 
 #ifdef __cplusplus
 }

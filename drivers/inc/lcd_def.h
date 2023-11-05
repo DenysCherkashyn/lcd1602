@@ -33,6 +33,7 @@ extern "C" {
 #define START_POSITION_LINE_3			(START_POSITION_LINE_1 + LINE_LENGTH)
 #define START_POSITION_LINE_4			(START_POSITION_LINE_2 + LINE_LENGTH)
 #define CURSOR_POSITION_MAX			(LINE_LENGTH-1)
+#define PROGRESS_BAR_WIDTH 			(SCREEN_WIDTH - 4)
 //#define END_POSITION_LINE_1			(START_POSITION_LINE_1 + (LINE_LENGTH-1))
 //#define END_POSITION_LINE_2			(START_POSITION_LINE_2 + (LINE_LENGTH-2))
 //#define END_POSITION_LINE_3			(START_POSITION_LINE_3 + (LINE_LENGTH-3))
@@ -50,8 +51,7 @@ extern "C" {
 #define SHIFT_POSITION_RIGHT        0x01                    /* R/L bit, inverse bit - enable shifting to the left */
 
 // user's defaults display sets
-#define ENTRY_MODE_DEFAULT              (0x04 | ((SET_SHIFT_DISPLAY)?(SHIFT_DISPLAY_WITH_COURSOR):0)\
-                                              | COURSOR_SHIFT_INCREMENT)
+#define ENTRY_MODE_DEFAULT              (0x04 | COURSOR_SHIFT_INCREMENT)
                                       
 #define DISPLAY_CONTROL_DEFAULT         (0x08 | ((SET_COURSOR)?(COURSOR_ON):0)\
                                               | ((SET_BLINKING)?(COURSOR_BLINKING_ON):0))

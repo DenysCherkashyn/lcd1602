@@ -14,13 +14,14 @@ class LCD final {
 	const std::unordered_map<uint16_t, uint8_t> charTable = CHAR_TABLE;
         bool initialized = false;
         uint8_t lastTransferDataByte;
-        uint8_t currentLine;
-        uint8_t currentPosition;
+        uint8_t line;
+        uint8_t cursorPosition;
+        uint8_t displayPosition;
 	#ifdef I2C_LCD_ADDRESS
 	    void (*i2cMasterWrite) (uint16_t, uint8_t*) = nullptr;
 	#endif
     
-        LCD (){initialized=false;}
+        LCD (){}
         ~LCD (){}
         LCD (const LCD&);
         const LCD& operator = (const LCD&);
@@ -42,6 +43,7 @@ class LCD final {
         void init();
         uint8_t checkSym(uint16_t&);
         std::string intToStr(int);
+        void alignDisplayPosition();
             
         /*
         void setMode ();
@@ -68,21 +70,22 @@ class LCD final {
 	void home ();
 	void goTo (uint8_t, uint8_t);
 	void shiftCursorLeft(uint8_t);
-	//void shiftCursorLeft();
+	void shiftCursorLeft();
 	void shiftCursorRight(uint8_t);
-	//void shiftCursorRight();
+	void shiftCursorRight();
 	void shiftDisplayLeft(uint8_t);
-	//void shiftDisplayLeft();
+	void shiftDisplayLeft();
 	void shiftDisplayRight(uint8_t);
-	//void shiftDisplayRight();
+	void shiftDisplayRight();
 	uint8_t getLine();
 	uint8_t getCursorPosition();
+	uint8_t getDisplayPosition();
 	uint8_t getLineQuantity();
 	uint8_t getCursorPositionMax();
 	bool isEndOfLine();
 
-
-	void print (uint16_t data);
+	void printCGROM (uint8_t data);
+	void printCh (uint16_t data);
 	void print (std::string, uint8_t);
 	void print (std::string);
 	void print (int, uint8_t);
@@ -91,11 +94,12 @@ class LCD final {
 	void print (double);
 	void print (float, uint8_t);
 	void print (float);
-	//void printR (auto);
 	void printHex(int data, uint8_t digits);
 	//void printHexR (auto);
 	void backspace();
-	//statusBar(uint8_t);
+	//void progressBar(float, uint8_t);
+	void progressBar(float, uint16_t);
+	void progressBar(float);
 	//processingBar();
 	//loadChar(???);
 	//drawChar(???);
