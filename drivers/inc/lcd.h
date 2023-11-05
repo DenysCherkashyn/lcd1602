@@ -82,6 +82,7 @@ class LCD final {
 	uint8_t getDisplayPosition();
 	uint8_t getLineQuantity();
 	uint8_t getCursorPositionMax();
+	uint8_t getDisplayWidth();
 	bool isEndOfLine();
 
 	void printCGROM (uint8_t data);

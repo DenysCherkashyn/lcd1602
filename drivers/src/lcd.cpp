@@ -334,6 +334,10 @@ void LCD::alignDisplayPosition() {
     	return CURSOR_POSITION_MAX;
     }
 
+    uint8_t LCD::getDisplayWidth() {
+	return SCREEN_WIDTH;
+    }
+
     bool LCD::isEndOfLine() {
 	return (cursorPosition >= CURSOR_POSITION_MAX) ? true : false;
     }
