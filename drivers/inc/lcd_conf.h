@@ -65,6 +65,7 @@ extern "C" {
     #define LINE_QUANTITY			2		    /*quantity of lines in LCD screen: 1, 2 or 4*/
     #define LINE_LENGTH				40		    /*length of one line */
     #define SCREEN_WIDTH			16		    /*screen width*/
+    #define CHAR_HEIGHT				8		    /*quantity dots for character height*/
     #define SET_COURSOR                         1                   /* Show coursor by default: 1 - ON, 0 - OFF  */
     #define SET_BLINKING                        0                   /* Enable blinking for coursor by default: 1 - ON, 0 - OFF  */
     #define SET_SHIFT_DISPLAY                   1                   /* Move the display if the cursor position goes beyond the right screen border.: 1 - ON, 0 - OFF  */

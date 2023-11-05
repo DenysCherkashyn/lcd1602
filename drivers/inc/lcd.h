@@ -21,8 +21,8 @@ class LCD final {
 	    void (*i2cMasterWrite) (uint16_t, uint8_t*) = nullptr;
 	#endif
     
-        LCD (){}
-        ~LCD (){}
+        LCD (){};
+        ~LCD (){};
         LCD (const LCD&);
         const LCD& operator = (const LCD&);
 
@@ -96,14 +96,10 @@ class LCD final {
 	void print (float, uint8_t);
 	void print (float);
 	void printHex(int data, uint8_t digits);
-	//void printHexR (auto);
 	void backspace();
-	//void progressBar(float, uint8_t);
 	void progressBar(float, uint16_t);
 	void progressBar(float);
-	//processingBar();
-	//loadChar(???);
-	//drawChar(???);
+	void loadCGROM(uint8_t, uint8_t*);
 
 };
     

@@ -35,35 +35,41 @@ int main(void)
   LCD& lcd = LCD::getInstance(masterWriteX);
   //  LCD& lcd = LCD::getInstance();
 
-  lcd.printCGROM(0xFF);
-  lcd.printCGROM(0xFF);
-  lcd.printCGROM(0xFF);
-  lcd.print("Линий LCD:  ");
-  lcd.print(lcd.getLineQuantity(), 1);
-  lcd.shiftDisplayLeft(3);
-  lcd.print(lcd.getLineQuantity(), 1);
-  lcd.backspace();
-
-  lcd.shiftDisplayLeft(15);
-  lcd.goTo(2, 0);
-
-  std::string str;
-  str += "Progress " + std::to_string(10);
-
-  lcd.print(str);
-
-  lcd.progressBar(1.78f, 'х');
-
-  lcd.printCGROM(0xFF);
-
-  //lcd.print("Поз.курсора:");
-  //lcd.print(lcd.getCursorPositionMax()+1, 1);
+  lcd.printCGROM(0b11101101);
+lcd.printCGROM(3u);
+uint8_t pattern1 []={0b00011111,
+	0b00001011,
+	0b00010101,
+	0b00001011,
+	0b00010101,
+	0b00001011,
+	0b00010101,
+	0b00001011};
+lcd.loadCGROM(3, pattern1);/**/
+uint8_t pattern2 []={0b00000000, 0b00010100,
+	0b00001010,
+	0b00010100,
+	0b00001010,
+	0b00010100,
+	0b00001010,
+	0b00010100};
+lcd.loadCGROM(4, pattern2);
 
 
-   return 0;
+   //return 0;
    /**/
    /* Loop forever */
-   while(1){
+uint32_t i;
+    while(1){
+	lcd.shiftCursorLeft();
+	lcd.printCGROM(3u);
 
+	i= 500000;
+	while(i>0) --i;
+	lcd.shiftCursorLeft();
+	lcd.printCGROM(4u);
+
+	i= 500000;
+	while(i>0) --i;
    }
 }

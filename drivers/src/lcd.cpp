@@ -524,5 +524,17 @@ void LCD::alignDisplayPosition() {
 	progressBar(percentProgress, 0x23);
     }
 
+    void LCD::loadCGROM(uint8_t position, uint8_t* charPattern) {
+	if (position > 7) return;
+	uint8_t ch;
+	writeInstruction(0x40u | (position * CHAR_HEIGHT));
+	setBit(RS_PORT, RS_PIN);
+	for(uint8_t i = 0; i < CHAR_HEIGHT; ++i) {
+	    ch = charPattern[i];
+	    write(ch);
+	};
+	goTo(line, cursorPosition);
+    }
+
 
 
