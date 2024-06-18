@@ -1,13 +1,29 @@
-#ifndef LCD_H
-#define LCD_H
+/*
+ * 	lcd.h
+ *
+ *	Created on: 06 Novmber 2023
+ *      Author: D.Cherkashin
+ *
+ *      General lcd driver header file.
+ *      Defines class attributes and methods.
+ *      Defines file include for definite stm32 controller type
+ *      For more information see readme.md file
+ *
+ */
 
+
+#ifndef _LCD_H_
+#define _LCD_H_
 
 #include <unordered_map>
 #include <string>
 
 #include "lcd_conf.h"
 #include "lcd_def.h"
-#include "lcd_charTable.h"
+
+
+
+// --- CLASS DEFINITION ---//
 
 class LCD final {
      private:
@@ -45,20 +61,11 @@ class LCD final {
         std::string intToStr(int);
         void alignDisplayPosition();
             
-        /*
-        void setMode ();
-        void loadChar ();
-        void drawChar ();
-        drawBar(uint8_t);
-        clearBar(uint8_t);?
-        */
         
-            
     public:
-
-	#ifdef I2C_LCD_ADDRESS
-	    static LCD& getInstance(void (*i2cWriteFunc)(uint16_t, uint8_t*));
-	#endif
+      #ifdef I2C_LCD_ADDRESS
+	static LCD& getInstance(void (*i2cWriteFunc)(uint16_t, uint8_t*));
+      #endif
 
 	static LCD& getInstance();
 	void backlightOn ();
@@ -84,7 +91,7 @@ class LCD final {
 	uint8_t getCursorPositionMax();
 	uint8_t getDisplayWidth();
 	bool isEndOfLine();
-
+	void loadCGROM(uint8_t, uint8_t*);
 	void printCGROM (uint8_t data);
 	void printCh (uint16_t data);
 	void print (std::string, uint8_t);
@@ -99,8 +106,6 @@ class LCD final {
 	void backspace();
 	void progressBar(float, uint16_t);
 	void progressBar(float);
-	void loadCGROM(uint8_t, uint8_t*);
-
 };
     
-#endif      /*LCD_H*/
+#endif      /*_LCD_H_*/

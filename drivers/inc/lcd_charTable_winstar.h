@@ -5,8 +5,8 @@
  *      Author: Master
  */
 
-#ifndef LCD_CHARTABLE_H
-#define LCD_CHARTABLE_H
+#ifndef LCD_CHARTABLE_WINSTAR_H
+#define LCD_CHARTABLE_WINSTAR_H
 
 
 #ifdef UTF8
