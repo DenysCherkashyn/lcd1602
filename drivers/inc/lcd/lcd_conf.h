@@ -28,7 +28,7 @@ extern "C" {
     #define UTF8
     //#define CP1251					/* not working yet!!! */
 
-    #include "lcd_charTable_winstar.h"			/*Connecting the symbols table for the corresponding LCD-сontroller*/
+    #include <lcd/lcd_charTable_winstar.h>			/*Connecting the symbols table for the corresponding LCD-сontroller*/
 
 //------------------------------//
 //-- CONNECTING CONFIGS --//

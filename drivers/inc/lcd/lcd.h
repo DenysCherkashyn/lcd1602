@@ -15,11 +15,11 @@
 #ifndef _LCD_H_
 #define _LCD_H_
 
+#include <lcd/lcd_conf.h>
+#include <lcd/lcd_def.h>
 #include <unordered_map>
 #include <string>
 
-#include "lcd_conf.h"
-#include "lcd_def.h"
 
 
 

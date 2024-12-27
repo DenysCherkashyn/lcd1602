@@ -30,8 +30,8 @@
 	#define SM 	0
 	#define FM	1
 
-	#include "i2c_conf.h"
-	#include "i2c_def.h"
+	#include <i2c/i2c_conf.h>
+	#include <i2c/i2c_def.h>
 
 	//=============================
 

@@ -10,9 +10,9 @@
  *
  */
 
+#include <lcd/lcd.h>
 #include "stm32f1xx.h"
 
-#include "lcd.h"
 
 /*****************************************
  *
@@ -179,13 +179,13 @@ void LCD::alignDisplayPosition() {
  *****************************************/
 
 #ifdef I2C_LCD_ADDRESS
-     LCD& LCD::getInstance(void (*i2cWriteFunc) (uint16_t, uint8_t*)) {
+LCD& LCD::getInstance(void (*i2cWriteFunc) (uint16_t, uint8_t*)) {
 	static LCD instance;
 	instance.i2cMasterWrite = i2cWriteFunc;
 	if (!instance.initialized)
 	    instance.init();
-            return instance;
-        };
+    return instance;
+};
 #endif
 
 LCD& LCD::getInstance( ) {
